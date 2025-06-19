@@ -8,6 +8,8 @@ TagManager:
   - Top
   - Enemy
   - Coin
+  - Score
+  - Bottom
   layers:
   - Default
   - TransparentFX

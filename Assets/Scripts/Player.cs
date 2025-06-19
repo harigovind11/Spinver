@@ -61,8 +61,12 @@ public class Player : MonoBehaviour
         {
             moveDirection.y *= -1f;
         }
+        if (collision.CompareTag("Bottom"))
+        {
+            moveDirection.y *= -1f;
+        }
 
-        if(collision.CompareTag("Coin"))
+        if (collision.CompareTag("Coin"))
         {
 
             SoundManager.Instance.PlaySound(_scoreSoundClip);
