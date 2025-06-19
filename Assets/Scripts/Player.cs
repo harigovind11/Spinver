@@ -62,13 +62,19 @@ public class Player : MonoBehaviour
             moveDirection.y *= -1f;
         }
 
-        if(collision.CompareTag("Score"))
+        if(collision.CompareTag("Coin"))
         {
 
             SoundManager.Instance.PlaySound(_scoreSoundClip);
             Destroy(Instantiate(_scoreParticle, collision.gameObject.transform.position, Quaternion.identity), 1f);
             GameplayManager.Instance.UpdateScore();
             StartCoroutine(ScoreDestroy(collision.gameObject));
+        }
+        if(collision.CompareTag("Enemy"))
+        {
+            GameplayManager.Instance.GameEnded();
+            Destroy(Instantiate(_playerParticle, transform.position, Quaternion.identity), 1f);
+            StartCoroutine(ScaleDown());
         }
     }
 

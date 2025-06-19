@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -13,6 +13,11 @@ public class GameplayManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         hasGameFinished = false;
 
@@ -24,7 +29,7 @@ public class GameplayManager : MonoBehaviour
         currentTime = totalTime;
         StartCoroutine(CountTime());
 
-        SpawnScore();
+        SpawnCoin();
 
         GameManager.Instance.IsInitialized = true;
     }
@@ -38,9 +43,14 @@ public class GameplayManager : MonoBehaviour
     private int remainingScore;
 
     [SerializeField] private GameObject _scorePrefab;
+    [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private Transform _enemyParent; 
+
+    private List<GameObject> _spawnedEnemies = new List<GameObject>();
+ 
     [SerializeField] private float _spawnX, _spawnY;
 
-    private void SpawnScore()
+    private void SpawnCoin()
     {
         remainingScore = scoreToSpawn;
 
@@ -62,6 +72,50 @@ public class GameplayManager : MonoBehaviour
             Instantiate(_scorePrefab, spawnPos, Quaternion.identity);
         }
     }
+    private void SpawnEnemy()
+    {
+        if (_enemyPrefab == null)
+        {
+            Debug.LogError("❌ _enemyPrefab not assigned!");
+            return;
+        }
+
+        int enemyCount = scoreToSpawn; // Example: scale with level
+
+        for (int i = 0; i < enemyCount; i++)
+        {
+            Vector3 spawnPos = new Vector3(Random.Range(-_spawnX, _spawnX), Random.Range(-_spawnY, _spawnY), 0);
+
+            RaycastHit2D hit = Physics2D.CircleCast(spawnPos, 1f, Vector2.zero);
+
+            int attempts = 0;
+            while (hit && attempts < 50)
+            {
+                spawnPos = new Vector3(Random.Range(-_spawnX, _spawnX), Random.Range(-_spawnY, _spawnY), 0);
+                hit = Physics2D.CircleCast(spawnPos, 1f, Vector2.zero);
+                attempts++;
+            }
+
+            GameObject newEnemy = Instantiate(_enemyPrefab, spawnPos, Quaternion.identity);
+
+            if (_enemyParent != null)
+                newEnemy.transform.SetParent(_enemyParent);
+
+            _spawnedEnemies.Add(newEnemy);
+        }
+    }
+
+    private void ResetEnemies()
+    {
+        foreach (GameObject enemy in _spawnedEnemies)
+        {
+            if (enemy != null)
+                Destroy(enemy);
+        }
+
+        _spawnedEnemies.Clear();
+    }
+
     public void UpdateScore()
     {
         score++;
@@ -76,7 +130,9 @@ public class GameplayManager : MonoBehaviour
             totalTime = scoreToSpawn * 5f;
             currentTime = totalTime;
 
-            SpawnScore();
+            SpawnCoin();
+            ResetEnemies();
+            SpawnEnemy();
 
         }
     }
@@ -112,7 +168,7 @@ public class GameplayManager : MonoBehaviour
 
     [SerializeField] private AudioClip _loseClip;
 
-    private void GameEnded()
+    public void GameEnded()
     {
         hasGameFinished = true;
         GameEnd?.Invoke();

@@ -6,7 +6,8 @@ TagManager:
   tags:
   - Side
   - Top
-  - Score
+  - Enemy
+  - Coin
   layers:
   - Default
   - TransparentFX
