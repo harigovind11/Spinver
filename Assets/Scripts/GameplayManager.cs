@@ -30,6 +30,8 @@ public class GameplayManager : MonoBehaviour
         StartCoroutine(CountTime());
 
         SpawnCoin();
+        ResetEnemies();
+        SpawnEnemy();
 
         GameManager.Instance.IsInitialized = true;
     }
