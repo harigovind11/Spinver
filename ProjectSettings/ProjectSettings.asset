@@ -165,6 +165,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.mayo.spinver
     Standalone: com.mayo.spinver
+    iPhone: com.mayo.spinver
   buildNumber:
     Standalone: 0
     VisionOS: 0
