@@ -2,20 +2,18 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
-
-    private void Awake()
+    private static GameManager _instance;
+    public static GameManager Instance
     {
-        if(Instance == null)
+        get
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            Init();
-            return;
-        }
-        else
-        {
-            Destroy(gameObject);
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<GameManager>();
+                DontDestroyOnLoad(_instance.gameObject);
+                _instance.Init();
+            }
+            return _instance;
         }
     }
 
